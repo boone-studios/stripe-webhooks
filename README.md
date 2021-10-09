@@ -1,6 +1,6 @@
 # Stripe Webhook Events
 
-![GitHub Actions](https://github.com/boone-studios/stripe-webhooks/actions/workflows/tests.yml/badge.svg?branch=main)
+[![Test Stripe Webhooks](https://github.com/boone-software/stripe-webhooks/actions/workflows/tests.yml/badge.svg)](https://github.com/boone-software/stripe-webhooks/actions/workflows/tests.yml)
 
 This server receives webhook events from Stripe and then sends them to the respective handlers.
 
