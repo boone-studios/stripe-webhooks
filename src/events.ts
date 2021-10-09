@@ -43,7 +43,7 @@ class Events implements IEvents {
      */
     public async customerCreated(data: CustomerEvent): Promise<Response> {
         const target = {
-            message: `:tada: New customer ${data.name} created!`,
+            message: `:tada: New customer **${data.name}** created!`,
         }
 
         return await this.send(target)
@@ -95,6 +95,56 @@ class Events implements IEvents {
     }
 
     /**
+     * Handler for 'invoice.finalized' event.
+     *
+     * @param {InvoiceEvent} data Stripe event.
+     * @return {Response}
+     */
+    public async invoiceFinalized(data: InvoiceEvent): Promise<Response> {
+        const target: GenericMessage = {
+            message: `:receipt: **Invoice ${data.id}** was finalized and is ready for payment.`,
+            title: `Invoice ${data.number}`.trim(),
+            url: data.hosted_invoice_url,
+        }
+
+        return await this.send(target)
+    }
+
+    /**
+     * Handler for 'invoice.paid' event.
+     *
+     * @param {InvoiceEvent} data Stripe event.
+     * @return {Response}
+     */
+    public async invoicePaid(data: InvoiceEvent): Promise<Response> {
+        const invoiceStatus = data.amount_remaining > 0 ? 'partially' : 'fully'
+
+        const target: GenericMessage = {
+            message: `:receipt: **Invoice ${data.id}** has been ${invoiceStatus} paid.`,
+            title: `Invoice ${data.number}`.trim(),
+            url: data.hosted_invoice_url,
+        }
+
+        return await this.send(target)
+    }
+
+    /**
+     * Handler for 'invoice.payment_failed' event.
+     *
+     * @param {InvoiceEvent} data Stripe event.
+     * @return {Response}
+     */
+    public async invoicePaymentFailed(data: InvoiceEvent): Promise<Response> {
+        const target: GenericMessage = {
+            message: `:receipt: A payment on **Invoice ${data.id}** was failed.`,
+            title: `Invoice ${data.number}`.trim(),
+            url: data.hosted_invoice_url,
+        }
+
+        return await this.send(target)
+    }
+
+    /**
      * Handler for 'payout.created' event.
      *
      * @param {PayoutEvent} data Stripe event.
@@ -108,7 +158,7 @@ class Events implements IEvents {
             : 'in a few days'
 
         const target: GenericMessage = {
-            message: `:moneybag: A payout of ${amount} was created and is expected to arrive ${date}!`
+            message: `:moneybag: A payout of **${amount}** was created and is expected to arrive ${date}!`
         }
 
         return await this.send(target)
@@ -128,7 +178,7 @@ class Events implements IEvents {
             : 'in a few days'
 
         const target: GenericMessage = {
-            message: `:sad: The payout of ${amount} that was set to arrive ${date} has failed.`
+            message: `:sad: The payout of **${amount}** that was set to arrive ${date} has failed.`
         }
 
         return await this.send(target)

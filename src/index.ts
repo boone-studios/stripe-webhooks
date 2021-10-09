@@ -29,6 +29,9 @@ const dispatchers: DispatcherInstance[] = [
 const handlers: Handler = {
     'customer.created': 'customerCreated',
     'invoice.created': 'invoiceCreated',
+    'invoice.finalized': 'invoiceFinalized',
+    'invoice.paid': 'invoicePaid',
+    'invoice.payment_failed': 'invoicePaymentFailed',
     'payout.created': 'payoutCreated',
     'payout.failed': 'payoutFailed',
 }

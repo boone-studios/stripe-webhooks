@@ -46,10 +46,13 @@ There are several events that can be handled by the server:
 
 - `customer.created`
 - `invoice.created`
+- `invoice.finalized`
+- `invoice.paid`
+- `invoice.payment_failed`
 - `payout.created`
 - `payout.failed`
 
-We plan on adding more events in the future, but you can also add more adapters by contributing to this project.
+We plan on adding more events in the future, but you can also add more adapters and event handlers by contributing to this project.
 
 ## Adding an Adapter
 
