@@ -1,0 +1,31 @@
+import { getFormattedDate } from '../../src/util/helpers'
+
+process.env.TZ = 'America/New_York'
+
+it('can format a Date instance', () => {
+    const date = new Date('2019-01-01T00:00:00.000Z')
+
+    expect(getFormattedDate(date))
+        .toBe(date.toLocaleString().split(',')[0])
+})
+
+it('can format a Date instance with a timezone', () => {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const date = new Date('2019-01-01T00:00:00.000Z')
+
+    expect(getFormattedDate(date, 'GMT'))
+        .toBe(date.toLocaleString().split(',')[0])
+})
+
+it('can format a numeric timestamp', () => {
+    expect(getFormattedDate(1588275766)).toBe('04/30/2020')
+})
+
+it('can pass a string through as-is', () => {
+    expect(getFormattedDate('I am a string!')).toBe('I am a string!')
+})
+
+it('cannot format a JavaScript timestamp', () => {
+    expect(getFormattedDate(1609459200000)).toBe('09/24/52971')
+    expect(getFormattedDate(1609459200000)).not.toBe('01/01/2021')
+})
