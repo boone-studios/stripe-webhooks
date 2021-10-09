@@ -1,5 +1,7 @@
 # Stripe Webhook Events
 
+![GitHub Actions](https://github.com/boone-studios/stripe-webhooks/actions/workflows/tests.yml/badge.svg?branch=main)
+
 This server receives webhook events from Stripe and then sends them to the respective handlers.
 
 ## Installation
@@ -9,7 +11,45 @@ $ git clone git@github.com:boone-software/stripe-webhooks.git
 $ npm install
 ```
 
-**Note:** In production, be sure to have [PM2](https://pm2.keymetrics.io/) installed on the server.
+## Usage
+
+To run the server persistently (using [PM2](https://pm2.keymetrics.io/)), run the following command:
+
+```bash
+$ npm run start
+```
+
+To deploy the server without PM2, run:
+
+```bash
+$ npm run serve
+```
+
+The server will listen on port 3000.
+
+_Alternatively, you can use Docker to deploy the server:
+
+```bash
+$ docker-compose build
+$ docker-compose up
+```
+
+## Adapters
+
+The server can be configured to use different adapters to handle different webhook events. These are the adapters that are currently supported:
+
+- [Discord](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks/)
+
+## Events
+
+There are several events that can be handled by the server:
+
+- `customer.created`
+- `invoice.created`
+- `payout.created`
+- `payout.failed`
+
+We plan on adding more events in the future, but you can also add more adapters by contributing to this project.
 
 ## Adding an Adapter
 
