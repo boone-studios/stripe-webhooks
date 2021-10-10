@@ -27,7 +27,7 @@ $ npm run serve
 
 The server will listen on port 3000.
 
-_Alternatively, you can use Docker to deploy the server:
+_Alternatively_, you can use Docker to deploy the server:
 
 ```bash
 $ docker-compose build
