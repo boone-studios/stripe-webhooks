@@ -50,6 +50,7 @@ There are several events that can be handled by the server:
 - `invoice.paid`
 - `invoice.payment_failed`
 - `payout.created`
+- `payout.paid`
 - `payout.failed`
 
 We plan on adding more events in the future, but you can also add more adapters and event handlers by contributing to this project.
