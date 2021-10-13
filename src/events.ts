@@ -183,6 +183,22 @@ class Events implements IEvents {
 
         return await this.send(target)
     }
+
+    /**
+     * Handler for 'payout.paid' event.
+     *
+     * @param {PayoutEvent} data Stripe event.
+     * @return {Response}
+     */
+    public async payoutPaid(data: PayoutEvent): Promise<Response> {
+        const amount = (data.amount / 100) + ' ' + (data.currency || 'USD')
+
+        const target: GenericMessage = {
+            message: `:rocket: The payout of **${amount}** has landed!`
+        }
+
+        return await this.send(target)
+    }
 }
 
 export default Events
