@@ -143,6 +143,18 @@ class Events implements IEvents {
 
         return await this.send(target)
     }
+    
+    public async invoiceSent(data: InvoiceEvent): Promise<Response> {
+        const amount = (data.amount / 100) + ' ' + (data.currency || 'USD')
+    
+        const target: GenericMessage = {
+            message: `:e_mail: **Invoice ${data.id}** (${amount}) was sent to **${data.customer_name}**.`,
+            title: `Invoice ${data.number}`.trim(),
+            url: data.hosted_invoice_url,
+        }
+        
+        return await this.send(target)
+    }
 
     /**
      * Handler for 'payout.created' event.
