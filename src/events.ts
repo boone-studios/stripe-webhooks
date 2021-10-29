@@ -145,7 +145,7 @@ class Events implements IEvents {
     }
     
     public async invoiceSent(data: InvoiceEvent): Promise<Response> {
-        const amount = (data.amount / 100) + ' ' + (data.currency || 'USD')
+        const amount = (data.amount_remaining / 100) + ' ' + (data.currency || 'USD')
     
         const target: GenericMessage = {
             message: `:e_mail: **Invoice ${data.id}** (${amount}) was sent to **${data.customer_name}**.`,
