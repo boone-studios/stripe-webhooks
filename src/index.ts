@@ -2,7 +2,10 @@ import dotenv from 'dotenv'
 import express from 'express'
 
 import DiscordAdapter from './adapters/discord'
-import Events from './events'
+
+import CustomerHandler from './handlers/customer'
+import InvoiceHandler from './handlers/invoice'
+import PayoutHandler from './handlers/payout'
 
 import { DispatcherInstance } from './types/adapters'
 import { Handler, Response } from './types/events'
@@ -27,15 +30,15 @@ const dispatchers: DispatcherInstance[] = [
 ]
 
 const handlers: Handler = {
-    'customer.created': 'customerCreated',
-    'invoice.created': 'invoiceCreated',
-    'invoice.finalized': 'invoiceFinalized',
-    'invoice.paid': 'invoicePaid',
-    'invoice.payment_failed': 'invoicePaymentFailed',
-    'invoice.sent': 'invoiceSent',
-    'payout.created': 'payoutCreated',
-    'payout.paid': 'payoutPaid',
-    'payout.failed': 'payoutFailed',
+    'customer.created': [CustomerHandler, 'created'],
+    'invoice.created': [InvoiceHandler, 'created'],
+    'invoice.finalized': [InvoiceHandler, 'finalized'],
+    'invoice.paid': [InvoiceHandler, 'paid'],
+    'invoice.payment_failed': [InvoiceHandler, 'paymentFailed'],
+    'invoice.sent': [InvoiceHandler, 'sent'],
+    'payout.created': [PayoutHandler, 'created'],
+    'payout.paid': [PayoutHandler, 'paid'],
+    'payout.failed': [PayoutHandler, 'failed'],
 }
 
 // Respond to a health check
@@ -56,7 +59,8 @@ app.post('/webhook', async (request, response) => {
     try {
         // Loop through our dispatchers and add them to the event handler
         for (const Dispatcher of dispatchers) {
-            const eventHandler: Events = new Events(Dispatcher)
+            const [ eventHandler, eventMethod ] = handler
+            // TODO Deconstruct event handlers and use them to delegate events to adapter
 
             // Make sure the event handler has the handler we're looking for
             if (typeof handler === 'string' && eventHandler[handler] instanceof Function) {

@@ -2,9 +2,10 @@ import Events from '../events'
 
 import { CustomerEvent } from '../types/stripe'
 import { DispatcherInstance } from '../types/adapters'
+import { GenericMessage } from '../types/messages'
 import { Response } from '../types/events'
 
-class Customer extends Events {
+class CustomerHandler extends Events {
     /**
      * Constructor.
      *
@@ -21,7 +22,7 @@ class Customer extends Events {
      * @return {Response}
      */
     public async created(data: CustomerEvent): Promise<Response> {
-        const target = {
+        const target: GenericMessage = {
             message: `:tada: New customer **${data.name}** created!`,
         }
 
@@ -29,4 +30,4 @@ class Customer extends Events {
     }
 }
 
-export default Customer
+export default CustomerHandler
