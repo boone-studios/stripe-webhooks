@@ -86,7 +86,9 @@ class Events implements IEvents {
         }
 
         const target: GenericMessage = {
-            message: `:receipt: ${status} invoice for ${amount} was created!`,
+            message: data.amount_due > 0
+                ? `:receipt: ${status} invoice for ${amount} was created!`
+                : `:receipt: ${status} invoice was created!`,
             title: `Invoice ${data.number}`.trim(),
             url: data.hosted_invoice_url,
         }
@@ -143,16 +145,22 @@ class Events implements IEvents {
 
         return await this.send(target)
     }
-    
+
+    /**
+     * Handler for 'invoice.sent' event.
+     *
+     * @param {InvoiceEvent} data Stripe event.
+     * @return {Response}
+     */
     public async invoiceSent(data: InvoiceEvent): Promise<Response> {
         const amount = (data.amount_remaining / 100) + ' ' + (data.currency || 'USD')
-    
+
         const target: GenericMessage = {
             message: `:e_mail: **Invoice ${data.id}** (${amount}) was sent to **${data.customer_name}**.`,
             title: `Invoice ${data.number}`.trim(),
             url: data.hosted_invoice_url,
         }
-        
+
         return await this.send(target)
     }
 
