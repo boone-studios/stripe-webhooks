@@ -1,9 +1,9 @@
 import Events from '../events'
 
-import { InvoiceEvent } from '../types/stripe'
-import { DispatcherInstance } from '../types/adapters'
-import { GenericMessage } from '../types/messages'
-import { Response } from '../types/events'
+import { InvoiceEvent } from '../../types/stripe'
+import { DispatcherInstance } from '../../types/adapters'
+import { GenericMessage } from '../../types/messages'
+import { Response } from '../../types/events'
 
 class InvoiceHandler extends Events {
     /**
@@ -14,7 +14,7 @@ class InvoiceHandler extends Events {
     constructor(adapter: DispatcherInstance) {
         super(adapter)
     }
-    
+
     /**
      * Handler for 'invoice.created' event.
      *
@@ -61,7 +61,7 @@ class InvoiceHandler extends Events {
 
         return await this.send(target)
     }
-    
+
     /**
      * Handler for 'invoice.finalized' event.
      *
@@ -77,7 +77,7 @@ class InvoiceHandler extends Events {
 
         return await this.send(target)
     }
-    
+
     /**
      * Handler for 'invoice.paid' event.
      *
@@ -95,7 +95,7 @@ class InvoiceHandler extends Events {
 
         return await this.send(target)
     }
-    
+
     /**
      * Handler for 'invoice.payment_failed' event.
      *
@@ -111,7 +111,7 @@ class InvoiceHandler extends Events {
 
         return await this.send(target)
     }
-    
+
     /**
      * Handler for 'invoice.sent' event.
      *

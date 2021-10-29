@@ -1,9 +1,11 @@
 import Events from '../events'
 
-import { PaymentEvent } from '../types/stripe'
-import { DispatcherInstance } from '../types/adapters'
-import { GenericMessage } from '../types/messages'
-import { Response } from '../types/events'
+import { PayoutEvent } from '../../types/stripe'
+import { DispatcherInstance } from '../../types/adapters'
+import { GenericMessage } from '../../types/messages'
+import { Response } from '../../types/events'
+
+import { getFormattedDate } from '../util/helpers'
 
 class PayoutHandler extends Events {
     /**
@@ -14,7 +16,7 @@ class PayoutHandler extends Events {
     constructor(adapter: DispatcherInstance) {
         super(adapter)
     }
-    
+
     /**
      * Handler for 'payout.created' event.
      *
@@ -34,7 +36,7 @@ class PayoutHandler extends Events {
 
         return await this.send(target)
     }
-    
+
     /**
      * Handler for 'payout.failed' event.
      *
@@ -54,7 +56,7 @@ class PayoutHandler extends Events {
 
         return await this.send(target)
     }
-    
+
     /**
      * Handler for 'payout.paid' event.
      *

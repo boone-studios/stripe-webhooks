@@ -7,9 +7,10 @@ import CustomerHandler from './handlers/customer'
 import InvoiceHandler from './handlers/invoice'
 import PayoutHandler from './handlers/payout'
 
-import { DispatcherInstance } from './types/adapters'
-import { Handler, Response } from './types/events'
-import { StripePayload } from './types/stripe'
+import { DispatcherInstance } from '../types/adapters'
+import { Handlers } from '../types/handlers'
+import { Response } from '../types/events'
+import { StripePayload } from '../types/stripe'
 
 // Initialize Express
 const app = express()
@@ -29,16 +30,10 @@ const dispatchers: DispatcherInstance[] = [
     new DiscordAdapter(),
 ]
 
-const handlers: Handler = {
-    'customer.created': [CustomerHandler, 'created'],
-    'invoice.created': [InvoiceHandler, 'created'],
-    'invoice.finalized': [InvoiceHandler, 'finalized'],
-    'invoice.paid': [InvoiceHandler, 'paid'],
-    'invoice.payment_failed': [InvoiceHandler, 'paymentFailed'],
-    'invoice.sent': [InvoiceHandler, 'sent'],
-    'payout.created': [PayoutHandler, 'created'],
-    'payout.paid': [PayoutHandler, 'paid'],
-    'payout.failed': [PayoutHandler, 'failed'],
+const handlers: Handlers = {
+    customer: CustomerHandler,
+    invoice: InvoiceHandler,
+    payout: PayoutHandler,
 }
 
 // Respond to a health check
@@ -50,25 +45,25 @@ app.get('/', (request, response) => {
 // Register a handler for our custom webhooks
 app.post('/webhook', async (request, response) => {
     // Get the payload from Stripe
-    const event: StripePayload = request.body
-    const handler: keyof Events = handlers[event.type]
+    const payload: StripePayload = request.body
+    const type: string = payload.type
 
     // Set the response content type ahead of time
     response.set('Content-Type', 'application/json')
 
     try {
-        // Loop through our dispatchers and add them to the event handler
-        for (const Dispatcher of dispatchers) {
-            const [ eventHandler, eventMethod ] = handler
-            // TODO Deconstruct event handlers and use them to delegate events to adapter
+        for (const dispatcher of dispatchers) {
+            // Split the event type and instantiate the handler
+            const [category, event] = type.split('.')
+            const instance: any = new handlers[category](dispatcher)
 
             // Make sure the event handler has the handler we're looking for
-            if (typeof handler === 'string' && eventHandler[handler] instanceof Function) {
-                const output: Response = await eventHandler[handler](event.data.object)
+            if ((dispatcher.events.length === 0 || dispatcher.events.includes(type)) && typeof instance[event] === 'function') {
+                const output: Response = await instance[event](payload.data.object)
 
                 console.log('✅\tSuccess:', output.body)
             } else {
-                console.error('❌\tError:', `Handler not found in dispatcher ${Dispatcher.constructor.name}`)
+                console.info('ℹ️\tError:', `Dispatcher ${dispatcher.constructor.name} does not support event ${type}`)
             }
 
             return response
@@ -83,7 +78,8 @@ app.post('/webhook', async (request, response) => {
             .send(JSON.stringify({ error: error.message }))
     }
 
-    response.sendStatus(200)
+    return response
+        .sendStatus(200)
 })
 
 export default app

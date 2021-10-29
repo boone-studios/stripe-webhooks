@@ -1,5 +1,5 @@
-import { Response } from '../types/events'
-import { FormattedMessage } from '../types/messages'
+import { Response } from '../../types/events'
+import { FormattedMessage } from '../../types/messages'
 
 interface IDispatcher {
     endpoint: string

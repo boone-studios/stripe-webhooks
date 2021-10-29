@@ -1,7 +1,8 @@
 import { isValid, parseISO } from 'date-fns'
 import { format, OptionsWithTZ, toDate, zonedTimeToUtc } from 'date-fns-tz'
 
-import { DateInput } from '../types/utils'
+import { DateInput } from '../../types/utils'
+import * as currencies from './currencies.json'
 
 /**
  * Format a Date instance into a string.
@@ -30,4 +31,68 @@ export function getFormattedDate(timestamp: DateInput, timeZone?: string): DateI
 
     // If we have a valid date, format it
     return isValid(date) ? format(date as Date, 'P', options) : timestamp
+}
+
+/**
+ * Format currency by a specified format string.
+ *
+ * @param {number } amount The amount to format.
+ * @param {string} currency The currency code.
+ * @returns  {string}
+ */
+export function getFormattedCurrency(amount: number, currency: string): string {
+    const currencyCode: string = currency.toUpperCase()
+    let negative: boolean = false
+
+    const format: string = (currencies as unknown as string[])[currencyCode as any]['format' as any]
+
+    // If no formatting string supplied
+    // or amount is not a number, return as is
+    if (!format || !Number.isFinite(amount) || !currencies.hasOwnProperty(currencyCode)) {
+        return String(amount)
+    }
+
+    // Extract placeholders from format string
+    const formatted = format
+        .match(/\#(.*)\#/g)
+        .pop()
+        .split('')
+        .reverse()
+
+    // Is number negative?
+    if (amount < 0) {
+        negative = true
+        amount = Math.abs(amount)
+    }
+
+    // Remove any decimals, split, and flip the numbers
+    const withoutDecimals = amount
+        .toString()
+        .replace(/[ ,.]/, '')
+        .split('')
+        .reverse()
+
+    // Add leading zeros to small amounts, if there's a separator in last 3 digits
+    if (withoutDecimals.length < 3 && currency.slice(-3).match(/[ ,.]/)) {
+        while (3 - withoutDecimals.length) {
+            withoutDecimals.unshift('0')
+        }
+    }
+
+    // Loop through the formatting, and look for separators
+    // Only get separators that fit within the length of the amount
+    for (let i = 0; i < withoutDecimals.length; i++) {
+        // If we find a matching separator, splice it into the amount in the same place
+        if (/[ ,.]/.test(formatted[i])) {
+            withoutDecimals.splice(i, 0, formatted[i])
+        }
+    }
+
+    // Flip the amount back in the right direction, and rejoin
+    const correctedAmount = withoutDecimals.reverse().join('')
+
+    // Handle Negatives (minus or parentheses)
+    return (!negative)
+        ? format.replace(/\#(.*)\#/g, correctedAmount).replace(/[\-\(\)]/gi, '')
+        : format.replace(/\#(.*)\#/g, correctedAmount)
 }

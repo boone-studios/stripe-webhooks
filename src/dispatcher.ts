@@ -1,8 +1,8 @@
 import https from 'https'
 
 import IDispatcher from './interfaces/dispatcher'
-import { Response } from './types/events'
-import { FormattedMessage } from './types/messages'
+import { Response } from '../types/events'
+import { FormattedMessage } from '../types/messages'
 
 class Dispatcher implements IDispatcher {
     /**

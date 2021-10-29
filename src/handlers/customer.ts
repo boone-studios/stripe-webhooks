@@ -1,9 +1,9 @@
 import Events from '../events'
 
-import { CustomerEvent } from '../types/stripe'
-import { DispatcherInstance } from '../types/adapters'
-import { GenericMessage } from '../types/messages'
-import { Response } from '../types/events'
+import { CustomerEvent } from '../../types/stripe'
+import { DispatcherInstance } from '../../types/adapters'
+import { GenericMessage } from '../../types/messages'
+import { Response } from '../../types/events'
 
 class CustomerHandler extends Events {
     /**

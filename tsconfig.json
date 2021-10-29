@@ -11,10 +11,15 @@
                 "node_modules/*"
             ]
         },
+        "resolveJsonModule": true,
         "sourceMap": true,
         "target": "es6",
     },
     "include": [
-        "./src/**/*"
+        "src/**/*"
+    ],
+    "typeRoots": [
+        "node_modules/@types",
+        "./types"
     ]
 }

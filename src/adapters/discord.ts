@@ -1,7 +1,14 @@
-import { GenericMessage, FormattedMessage } from './../types/messages'
+import { GenericMessage, FormattedMessage } from '../../types/messages'
 import Dispatcher from '../dispatcher'
 
 class DiscordAdapter extends Dispatcher {
+    /**
+     * Events that this dispatcher supports. If empty, all events are supported.
+     *
+     * @var {string[]}
+     */
+    public readonly events: string[] = []
+
     /**
      * Constructor.
      */
