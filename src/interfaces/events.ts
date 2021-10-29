@@ -9,6 +9,7 @@ interface IEvents {
     invoiceFinalized: EventMethod<InvoiceEvent>
     invoicePaid: EventMethod<InvoiceEvent>
     invoicePaymentFailed: EventMethod<InvoiceEvent>
+    invoiceSent: EventMethod<InvoiceEvent>
     payoutCreated: EventMethod<PayoutEvent>
     payoutPaid: EventMethod<PayoutEvent>
     payoutFailed: EventMethod<PayoutEvent>

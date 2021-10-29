@@ -32,6 +32,7 @@ const handlers: Handler = {
     'invoice.finalized': 'invoiceFinalized',
     'invoice.paid': 'invoicePaid',
     'invoice.payment_failed': 'invoicePaymentFailed',
+    'invoice.sent': 'invoiceSent',
     'payout.created': 'payoutCreated',
     'payout.paid': 'payoutPaid',
     'payout.failed': 'payoutFailed',
