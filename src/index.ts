@@ -1,3 +1,4 @@
+import { camelCase } from 'lodash'
 import dotenv from 'dotenv'
 import express from 'express'
 
@@ -61,8 +62,11 @@ app.post('/webhook', async (request, response) => {
             const [category, event] = type.split('.')
             const instance: any = new handlers[category](dispatcher)
 
+            // Methods are camel-cased event names
+            const methodName = camelCase(event)
+
             // Make sure the event handler has the handler we're looking for
-            if ((dispatcher.events.length === 0 || dispatcher.events.includes(type)) && typeof instance[event] === 'function') {
+            if ((dispatcher.events.length === 0 || dispatcher.events.includes(type)) && typeof instance[methodName] === 'function') {
                 const output: Response = await instance[event](payload.data.object)
 
                 Logger.success(`Success: ${output.body}`)
