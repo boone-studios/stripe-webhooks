@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import express from 'express'
 
 import DiscordAdapter from './adapters/discord'
+import SlackAdapter from './adapters/slack'
 
 import CustomerHandler from './handlers/customer'
 import InvoiceHandler from './handlers/invoice'
@@ -30,6 +31,7 @@ app.set('port', process.env.PORT || 3000)
 // Define dispatchers and handlers
 const dispatchers: DispatcherInstance[] = [
     new DiscordAdapter(),
+    // new SlackAdapter(),
 ]
 
 const handlers: Handlers = {

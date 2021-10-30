@@ -1,4 +1,4 @@
-import { DiscordPayload } from './payloads'
+import { DiscordPayload, SlackPayload} from './payloads'
 import { StripeWebhookEvent } from './stripe'
 
 export interface GenericMessage {
@@ -11,3 +11,4 @@ export interface GenericMessage {
 
 export type FormattedMessage =
     | DiscordPayload
+    | SlackPayload
