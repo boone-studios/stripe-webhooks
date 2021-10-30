@@ -12,6 +12,8 @@ import { Handlers } from '../types/handlers'
 import { Response } from '../types/events'
 import { StripePayload } from '../types/stripe'
 
+import Logger from './util/logger'
+
 // Initialize Express
 const app = express()
 
@@ -61,9 +63,9 @@ app.post('/webhook', async (request, response) => {
             if ((dispatcher.events.length === 0 || dispatcher.events.includes(type)) && typeof instance[event] === 'function') {
                 const output: Response = await instance[event](payload.data.object)
 
-                console.log('✅\tSuccess:', output.body)
+                Logger.success(`Success: ${output.body}`)
             } else {
-                console.info('ℹ️\tError:', `Dispatcher ${dispatcher.constructor.name} does not support event ${type}`)
+                Logger.error(`Error: Dispatcher ${dispatcher.constructor.name} does not support event ${type}`)
             }
 
             return response
@@ -71,7 +73,7 @@ app.post('/webhook', async (request, response) => {
         }
     } catch (error) {
         // If an error occurs, log it and return a 500
-        console.error(`❌\tError message: ${error.message}`)
+        Logger.error(error.message)
 
         return response
             .status(500)

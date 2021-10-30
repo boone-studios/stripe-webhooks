@@ -1,5 +1,5 @@
 import { isValid, parseISO } from 'date-fns'
-import { format, OptionsWithTZ, toDate, zonedTimeToUtc } from 'date-fns-tz'
+import { format, OptionsWithTZ, toDate } from 'date-fns-tz'
 
 import { DateInput } from '../../types/utils'
 import * as currencies from './currencies.json'

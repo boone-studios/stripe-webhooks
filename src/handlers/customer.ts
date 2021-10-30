@@ -23,6 +23,7 @@ class CustomerHandler extends Events {
      */
     public async created(data: CustomerEvent): Promise<Response> {
         const target: GenericMessage = {
+            data,
             message: `:tada: New customer **${data.name}** created!`,
         }
 

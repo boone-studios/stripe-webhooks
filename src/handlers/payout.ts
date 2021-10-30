@@ -31,6 +31,7 @@ class PayoutHandler extends Events {
             : 'in a few days'
 
         const target: GenericMessage = {
+            data,
             message: `:moneybag: A payout of **${amount}** was created and is expected to arrive ${date}!`
         }
 
@@ -51,6 +52,7 @@ class PayoutHandler extends Events {
             : 'in a few days'
 
         const target: GenericMessage = {
+            data,
             message: `:sad: The payout of **${amount}** that was set to arrive ${date} has failed.`
         }
 
@@ -67,6 +69,7 @@ class PayoutHandler extends Events {
         const amount = (data.amount / 100) + ' ' + (data.currency || 'USD')
 
         const target: GenericMessage = {
+            data,
             message: `:rocket: The payout of **${amount}** has landed!`
         }
 

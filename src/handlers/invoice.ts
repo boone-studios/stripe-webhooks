@@ -52,6 +52,7 @@ class InvoiceHandler extends Events {
         }
 
         const target: GenericMessage = {
+            data,
             message: data.amount_due > 0
                 ? `:receipt: ${status} invoice for ${amount} was created!`
                 : `:receipt: ${status} invoice was created!`,
@@ -70,6 +71,7 @@ class InvoiceHandler extends Events {
      */
     public async finalized(data: InvoiceEvent): Promise<Response> {
         const target: GenericMessage = {
+            data,
             message: `:receipt: **Invoice ${data.id}** was finalized and is ready for payment.`,
             title: `Invoice ${data.number}`.trim(),
             url: data.hosted_invoice_url,
@@ -88,6 +90,7 @@ class InvoiceHandler extends Events {
         const invoiceStatus = data.amount_remaining > 0 ? 'partially' : 'fully'
 
         const target: GenericMessage = {
+            data,
             message: `:receipt: **Invoice ${data.id}** has been ${invoiceStatus} paid.`,
             title: `Invoice ${data.number}`.trim(),
             url: data.hosted_invoice_url,
@@ -104,6 +107,7 @@ class InvoiceHandler extends Events {
      */
     public async paymentFailed(data: InvoiceEvent): Promise<Response> {
         const target: GenericMessage = {
+            data,
             message: `:receipt: A payment on **Invoice ${data.id}** was failed.`,
             title: `Invoice ${data.number}`.trim(),
             url: data.hosted_invoice_url,
@@ -122,6 +126,7 @@ class InvoiceHandler extends Events {
         const amount = (data.amount_remaining / 100) + ' ' + (data.currency || 'USD')
 
         const target: GenericMessage = {
+            data,
             message: `:e_mail: **Invoice ${data.id}** (${amount}) was sent to **${data.customer_name}**.`,
             title: `Invoice ${data.number}`.trim(),
             url: data.hosted_invoice_url,
