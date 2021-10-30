@@ -1,7 +1,10 @@
-import { DiscordPayload } from './discord'
+import { DiscordPayload } from './payloads'
+import { StripeWebhookEvent } from './stripe'
 
 export interface GenericMessage {
+    data?: StripeWebhookEvent
     message?: string,
+    path?: string,
     title?: string,
     url?: string,
 }
