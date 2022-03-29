@@ -162,6 +162,28 @@ export declare interface PayoutEvent {
     type?: string,
 }
 
+export declare interface SubscriptionEvent {
+    id: string,
+    object: string,
+    billing_thresholds?: any,
+    active: boolean,
+    billing_scheme: string,
+    created: Date,
+    currency: string,
+    livemode: boolean,
+    lookup_key?: string,
+    metadata?: object,
+    nickname?: string,
+    product: string,
+    recurring?: object,
+    tax_behavior?: string,
+    tiers_mode?: any,
+    transform_quantity?: any,
+    type: string,
+    unit_amount: number,
+    unit_amount_decimal?: string,
+}
+
 export declare interface StripePayload {
     id: string,
     object: string,
