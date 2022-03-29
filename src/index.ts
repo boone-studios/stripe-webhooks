@@ -1,12 +1,20 @@
+import { camelCase } from 'lodash'
 import dotenv from 'dotenv'
 import express from 'express'
 
 import DiscordAdapter from './adapters/discord'
-import Events from './events'
+import SlackAdapter from './adapters/slack'
 
-import { DispatcherInstance } from './types/adapters'
-import { Handler, Response } from './types/events'
-import { StripePayload } from './types/stripe'
+import CustomerHandler from './handlers/customer'
+import InvoiceHandler from './handlers/invoice'
+import PayoutHandler from './handlers/payout'
+
+import { DispatcherInstance } from '../types/adapters'
+import { Handlers } from '../types/handlers'
+import { Response } from '../types/events'
+import { StripePayload } from '../types/stripe'
+
+import Logger from './util/logger'
 
 // Initialize Express
 const app = express()
@@ -24,18 +32,13 @@ app.set('port', process.env.PORT || 3000)
 // Define dispatchers and handlers
 const dispatchers: DispatcherInstance[] = [
     new DiscordAdapter(),
+    // new SlackAdapter(),
 ]
 
-const handlers: Handler = {
-    'customer.created': 'customerCreated',
-    'invoice.created': 'invoiceCreated',
-    'invoice.finalized': 'invoiceFinalized',
-    'invoice.paid': 'invoicePaid',
-    'invoice.payment_failed': 'invoicePaymentFailed',
-    'invoice.sent': 'invoiceSent',
-    'payout.created': 'payoutCreated',
-    'payout.paid': 'payoutPaid',
-    'payout.failed': 'payoutFailed',
+const handlers: Handlers = {
+    customer: CustomerHandler,
+    invoice: InvoiceHandler,
+    payout: PayoutHandler,
 }
 
 // Respond to a health check
@@ -47,24 +50,28 @@ app.get('/', (request, response) => {
 // Register a handler for our custom webhooks
 app.post('/webhook', async (request, response) => {
     // Get the payload from Stripe
-    const event: StripePayload = request.body
-    const handler: keyof Events = handlers[event.type]
+    const payload: StripePayload = request.body
+    const type: string = payload.type
 
     // Set the response content type ahead of time
     response.set('Content-Type', 'application/json')
 
     try {
-        // Loop through our dispatchers and add them to the event handler
-        for (const Dispatcher of dispatchers) {
-            const eventHandler: Events = new Events(Dispatcher)
+        for (const dispatcher of dispatchers) {
+            // Split the event type and instantiate the handler
+            const [category, event] = type.split('.')
+            const instance: any = new handlers[category](dispatcher)
+
+            // Methods are camel-cased event names
+            const methodName = camelCase(event)
 
             // Make sure the event handler has the handler we're looking for
-            if (typeof handler === 'string' && eventHandler[handler] instanceof Function) {
-                const output: Response = await eventHandler[handler](event.data.object)
+            if ((dispatcher.events.length === 0 || dispatcher.events.includes(type)) && typeof instance[methodName] === 'function') {
+                const output: Response = await instance[event](payload.data.object)
 
-                console.log('✅\tSuccess:', output.body)
+                Logger.success(`Success: ${output.body}`)
             } else {
-                console.error('❌\tError:', `Handler not found in dispatcher ${Dispatcher.constructor.name}`)
+                Logger.error(`Error: Dispatcher ${dispatcher.constructor.name} does not support event ${type}`)
             }
 
             return response
@@ -72,14 +79,15 @@ app.post('/webhook', async (request, response) => {
         }
     } catch (error) {
         // If an error occurs, log it and return a 500
-        console.error(`❌\tError message: ${error.message}`)
+        Logger.error(error.message)
 
         return response
             .status(500)
             .send(JSON.stringify({ error: error.message }))
     }
 
-    response.sendStatus(200)
+    return response
+        .sendStatus(200)
 })
 
 export default app

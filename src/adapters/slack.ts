@@ -1,7 +1,7 @@
 import { GenericMessage, FormattedMessage } from '../../types/messages'
 import Dispatcher from '../dispatcher'
 
-class DiscordAdapter extends Dispatcher {
+class SlackAdapter extends Dispatcher {
     /**
      * Events that this dispatcher supports. If empty, all events are supported.
      *
@@ -15,8 +15,8 @@ class DiscordAdapter extends Dispatcher {
     constructor() {
         super()
 
-        this.endpoint = process.env.DISCORD_WEBHOOK
-        this.name = 'Discord'
+        this.endpoint = process.env.SLACK_WEBHOOK
+        this.name = 'Slack'
 
         this.headers = {
             'Content-Type': 'application/json',
@@ -31,9 +31,9 @@ class DiscordAdapter extends Dispatcher {
      */
     public format(data: GenericMessage): FormattedMessage {
         return {
-            content: data.message,
+            text: data.message,
         }
     }
 }
 
-export default DiscordAdapter
+export default SlackAdapter

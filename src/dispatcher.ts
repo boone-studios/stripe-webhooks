@@ -1,8 +1,10 @@
 import https from 'https'
 
 import IDispatcher from './interfaces/dispatcher'
-import { Response } from './types/events'
-import { FormattedMessage } from './types/messages'
+import { Response } from '../types/events'
+import { FormattedMessage } from '../types/messages'
+
+import Logger from './util/logger'
 
 class Dispatcher implements IDispatcher {
     /**
@@ -27,6 +29,13 @@ class Dispatcher implements IDispatcher {
     public name: string = 'Dispatcher'
 
     /**
+     * The path to the endpoint.
+     *
+     * @var {string}
+     */
+    public path: string = '/'
+
+    /**
      * The type of event.
      *
      * @var {string}
@@ -34,60 +43,25 @@ class Dispatcher implements IDispatcher {
     private type: string
 
     /**
-     * Log output to the console.
-     *
-     * @param {string} type Type of message.
-     * @param {string} message Message to output to console.
-     * @param {string} name (Optional) Adapter name.
-     * @return {void}
-     */
-    private logger(type: string, message: string, name?: string): void {
-        const adapterName = name || this.name
-
-        switch (type) {
-            case 'action':
-                console.debug(`⚙️\t[${adapterName}] ${message.trim()}`)
-                break
-
-            case 'error':
-                console.error(`😱\t[${adapterName}] ${message.trim()}`)
-                break
-
-            case 'info':
-                console.log(`💬\t[${adapterName}] ${message.trim()}`)
-                break
-
-            case 'warn':
-                console.warn(`⚠️\t[${adapterName}] ${message.trim()}`)
-                break
-
-            case 'debug':
-                // Fall through to default
-
-            default:
-                if (process.env.DEBUG) {
-                    console.debug(`🐛\t[${adapterName}] ${message.trim()}`)
-                }
-                break
-        }
-    }
-
-    /**
      * Format the Stripe webhook event and then send the formatted message to the
      * specified webhook.
      *
      * @param {FormattedMessage} message Stripe webhook event.
-     * @return {Promise<Response></Response>}
+     * @return {Promise<Response>}
      */
     public async send(message: FormattedMessage): Promise<Response> {
         if (!this.endpoint) {
             throw new Error(`No endpoint specified for adapter "${this.name}"".`)
         }
 
-        this.logger('info', 'Formatted message for adapter.')
-        this.logger('action', 'Let\'s send this message!')
+        Logger.info('Formatted message for adapter.', this.name)
+        Logger.action('Let\'s send this message!', this.name)
 
-        const headers: { [x: string]: any } = {'Content-Type': 'application/json', ...this.headers}
+        const headers: { [x: string]: any } = {
+            'Content-Type': 'application/json',
+            path: this.path,
+            ...this.headers
+        }
 
         const options = {
             headers,
@@ -99,10 +73,10 @@ class Dispatcher implements IDispatcher {
             const request = https.request(this.endpoint, options, (response) => {
                 let body: string = ''
 
-                this.logger('info', `Webhook endpoint response: ${response.statusCode}`)
+                Logger.info(`Webhook endpoint response: ${response.statusCode}`, this.name)
 
                 response.on('data', (chunk) => {
-                    this.logger('info', `Response from adapter: ${chunk}`)
+                    Logger.info(`Response from adapter: ${chunk}`, this.name)
                     body += chunk.toString()
                 })
 
@@ -120,7 +94,7 @@ class Dispatcher implements IDispatcher {
             })
 
             request.on('error', (error) => {
-                this.logger('error', `Error sending message to adapter: ${error.message}`)
+                Logger.error(`Error sending message to adapter: ${error.message}`, this.name)
                 reject(error)
             })
 

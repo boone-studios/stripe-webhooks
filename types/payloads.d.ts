@@ -41,3 +41,28 @@ export declare interface DiscordPayload {
 export declare interface DiscordThumbnail {
     url: string,
 }
+
+export declare interface SlackFields {
+    type: string,
+    text: string,
+}
+
+export declare interface SlackBlocks {
+    type: string,
+    block_id?: string,
+    text: {
+        type: string,
+        text: string,
+    },
+    accessory?: {
+        type: string,
+        image_url: string,
+        alt_text?: string,
+    },
+    fields?: SlackFields[],
+}
+
+export declare interface SlackPayload {
+    text: string,
+    blocks?: SlackBlocks[],
+}
